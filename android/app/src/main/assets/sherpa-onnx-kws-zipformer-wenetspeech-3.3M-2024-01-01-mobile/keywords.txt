@@ -1,17 +1,12 @@
-n ǐ h ǎo j ūn g ē @你好军哥
-d àn g ē d àn g ē @蛋哥蛋哥
-x iǎo ài t óng x ué @小爱同学
-n ǐ h ǎo w èn w èn @你好问问
-x iǎo y ì x iǎo y ì @小艺小艺
-x iǎo m ǐ x iǎo m ǐ @小米小米
-l ín m ěi l ì @林美丽
-n ǐ h ǎo x ī x ī @你好西西
+m ǎ x iǎo q uán @码小全
 sh àng y ī b ù @上一步
 sh àng y ī g è @上一个
+q ián y ī g è @前一个
 q ián y ī b ù @前一步
 x ià y ī b ù @下一步
 x ià y ī g è @下一个
 h òu y ī g è @后一个
+h òu y ī b ù @后一步
 f ǎn h uí k āi sh ǐ @返回开始
 ch óng x īn k āi sh ǐ @重新开始
 h uí d ào q ǐ d iǎn @回到起点

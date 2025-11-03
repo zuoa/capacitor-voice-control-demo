@@ -3,6 +3,8 @@
  */
 import { SherpaOnnx, KeywordDetectedEvent, ErrorEvent } from '../capacitor/plugins'
 import { Platform } from '../capacitor/utils'
+import { showToast } from '../components/common/Toast'
+import { findCommandByKeyword } from '../services/commands'
 
 export function createSherpaOnnxPage(): string {
   return `
@@ -163,18 +165,70 @@ export function setupSherpaOnnxPage() {
   
   // 监听关键词检测
   SherpaOnnx.addListener('onKeywordDetected', (event: KeywordDetectedEvent) => {
-    log(`🎯 检测到关键词: ${event.keyword} (置信度: ${(event.confidence * 100).toFixed(1)}%)`)
+    // 查找对应的命令信息
+    const commandInfo = findCommandByKeyword(event.keyword)
+    
+    // 日志信息包含归类信息和具体指令
+    const commandName = commandInfo?.name || '未知命令'
+    log(`🎯 检测到关键词: ${event.keyword} (命令类别: ${commandName}, 置信度: ${(event.confidence * 100).toFixed(1)}%)`)
+    
+    // 显示 Toast 提示（包含归类信息）
+    const toastMessage = commandInfo ? `${commandInfo.name}: ${event.keyword}` : event.keyword
+    showToast({
+      message: toastMessage,
+      type: 'success',
+      duration: 2000
+    })
+    
+    // 显示完整的识别结果：包含归类信息和具体指令
     const resultEl = document.getElementById('sherpa-result-text')!
-    resultEl.innerHTML = `
-      <div style="font-size: 1.2em; color: #10b981; font-weight: bold;">
-        ${event.keyword}
-      </div>
-      <div style="margin-top: 8px; color: #888;">
-        置信度: ${(event.confidence * 100).toFixed(1)}% | 
-        时间: ${new Date(event.timestamp).toLocaleTimeString()}
-      </div>
-    `
-    updateStatus(`检测到: ${event.keyword}`, 'success')
+    if (commandInfo) {
+      resultEl.innerHTML = `
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 0.9em; color: #666; margin-bottom: 4px;">命令类别</div>
+          <div style="font-size: 1.1em; color: #3b82f6; font-weight: bold;">
+            ${commandInfo.name}
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 0.9em; color: #666; margin-bottom: 4px;">具体指令</div>
+          <div style="font-size: 1.2em; color: #10b981; font-weight: bold;">
+            ${event.keyword}
+          </div>
+        </div>
+        ${commandInfo.description ? `
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 0.9em; color: #666; margin-bottom: 4px;">说明</div>
+            <div style="font-size: 0.95em; color: #888;">
+              ${commandInfo.description}
+            </div>
+          </div>
+        ` : ''}
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; color: #888; font-size: 0.85em;">
+          置信度: ${(event.confidence * 100).toFixed(1)}% | 
+          时间: ${new Date(event.timestamp).toLocaleTimeString()}
+        </div>
+      `
+    } else {
+      // 未找到对应命令时，仍显示关键词
+      resultEl.innerHTML = `
+        <div style="font-size: 1.2em; color: #10b981; font-weight: bold;">
+          ${event.keyword}
+        </div>
+        <div style="margin-top: 8px; color: #f59e0b; font-size: 0.9em;">
+          ⚠️ 未找到对应的命令类别
+        </div>
+        <div style="margin-top: 8px; color: #888; font-size: 0.85em;">
+          置信度: ${(event.confidence * 100).toFixed(1)}% | 
+          时间: ${new Date(event.timestamp).toLocaleTimeString()}
+        </div>
+      `
+    }
+    
+    const statusMessage = commandInfo 
+      ? `检测到: ${commandInfo.name} - ${event.keyword}` 
+      : `检测到: ${event.keyword}`
+    updateStatus(statusMessage, 'success')
   })
   
   // 监听错误

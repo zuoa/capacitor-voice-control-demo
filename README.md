@@ -154,6 +154,91 @@ console.log('当前阈值:', status.threshold)
 console.log('采样率:', status.sampleRate)
 ```
 
+### 命令识别系统
+
+**重要**: 为了处理多个相似关键词指向同一个动作的情况，项目提供了 `CommandRecognitionSystem`。
+
+#### 为什么需要命令分类？
+
+在实际应用中，不同的用户可能会用不同的方式表达相同的意图：
+- "上一步"、"上一个"、"前一步"、"前一个" → 都表示"上一个"
+- "再播一次"、"重播"、"再来一遍"、"重新播放" → 都表示"重播"
+
+命令识别系统将这些关键词归类到统一的动作指令。
+
+#### 使用命令分类系统
+
+```typescript
+import { CommandRecognitionSystem } from './services'
+import { createCommandMapping, getAllKeywords } from './services/commands'
+
+// 1. 创建系统实例
+const system = new CommandRecognitionSystem()
+
+// 2. 设置命令映射（定义关键词到命令的分类关系）
+const mapping = createCommandMapping()
+system.setCommandMapping(mapping)
+
+// 3. 注册命令处理器（使用命令ID而非具体关键词）
+system.registerCommand('previous', () => {
+  console.log('执行上一个操作')
+  // 同一个处理器处理所有类似关键词："上一步"、"上一个"、"前一步"、"前一个"
+})
+
+system.registerCommand('next', () => {
+  console.log('执行下一个操作')
+})
+
+system.registerCommand('replay', () => {
+  console.log('重播')
+})
+
+// 4. 初始化并开始
+const keywords = getAllKeywords()
+await system.initialize(keywords, {
+  threshold: 0.65,
+  sampleRate: 16000,
+  numThreads: 2
+})
+
+await system.start()
+```
+
+#### 支持的命令类型
+
+当前系统定义了 9 种命令类型，覆盖 36 个关键词：
+
+- `activate` - 激活语音助手（8 个唤醒词）
+- `previous` - 上一个项目（4 个关键词）
+- `next` - 下一个项目（4 个关键词）
+- `restart` - 重新开始（4 个关键词）
+- `replay` - 重播（5 个关键词）
+- `pause` - 暂停（1 个关键词）
+- `resume` - 继续（2 个关键词）
+- `volumeUp` - 音量调大（4 个关键词）
+- `volumeDown` - 音量调小（4 个关键词）
+
+#### 添加自定义命令
+
+在 `src/services/commands.ts` 中添加新的命令类型：
+
+```typescript
+export const COMMAND_TYPES: CommandType[] = [
+  // ... 现有命令
+  {
+    id: 'customAction',
+    name: '自定义动作',
+    description: '执行自定义操作',
+    keywords: [
+      '自定义关键词1',
+      '自定义关键词2'
+    ]
+  }
+]
+```
+
+更多详细信息请参考 [src/services/README.md](./src/services/README.md)。
+
 ### API 参考
 
 #### `init(options?)`
