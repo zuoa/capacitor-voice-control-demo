@@ -8,6 +8,11 @@
     "noEmit": true,
     "isolatedModules": true,
     "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "types": [
       "@capacitor/core",
       "react",

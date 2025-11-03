@@ -3,6 +3,20 @@ import { SherpaOnnx, KeywordDetectedEvent, ErrorEvent } from '../capacitor/plugi
 import { Platform } from '../capacitor/utils'
 import { showToast } from '../components/common/Toast'
 import { findCommandByKeyword } from '../services/commands'
+import { Button } from '../components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Badge } from '../components/ui/badge'
+import { Separator } from '../components/ui/separator'
+import { ScrollArea } from '../components/ui/scroll-area'
+import { Label } from '../components/ui/label'
+import { Input } from '../components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../components/ui/select'
 
 interface MicrophoneDevice {
   stableId: string
@@ -85,6 +99,7 @@ export function SherpaOnnxPage() {
 
         if (!inputs.length) {
           log('未发现麦克风')
+          setSelectedMicId('no-microphone')
           return
         }
 
@@ -98,6 +113,7 @@ export function SherpaOnnxPage() {
         log(`已检测到麦克风: ${inputs.length} 个`)
       } else {
         log('Web 环境暂不支持设备选择')
+        setSelectedMicId('web-default')
       }
     } catch (e: any) {
       log(`枚举设备失败: ${e?.message || e}`)
@@ -107,6 +123,11 @@ export function SherpaOnnxPage() {
   // 选择麦克风
   const selectMicrophone = useCallback(async (stableId: string) => {
     if (!stableId) return
+    
+    // 跳过特殊值
+    if (stableId === 'no-microphone' || stableId === 'web-default') {
+      return
+    }
 
     if (Platform.isNative()) {
       try {
@@ -295,208 +316,236 @@ export function SherpaOnnxPage() {
     setThreshold(parseInt(e.target.value))
   }, [])
 
-  // 处理采样率变化
-  const handleSampleRateChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSampleRate(parseInt(e.target.value))
-  }, [])
-
-  // 处理线程数变化
-  const handleNumThreadsChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNumThreads(parseInt(e.target.value))
-  }, [])
-
-  // 处理麦克风选择变化
-  const handleMicSelectChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMicId(e.target.value)
-  }, [])
-
   return (
-    <div className="sherpa-onnx-page">
-      <h2>Sherpa-ONNX 指令识别测试</h2>
-
-      <div className="info-box">
-        <p>基于 sherpa-onnx 的离线关键词识别引擎</p>
-        <p style={{ fontSize: '0.9em', color: '#888' }}>
-          ✓ 完全离线 ✓ 无需网络 ✓ 低延迟
-        </p>
-      </div>
+    <div className="sherpa-onnx-page min-h-screen p-4 space-y-4 bg-background">
+      <Card>
+        <CardHeader>
+          <CardTitle>Sherpa-ONNX 指令识别测试</CardTitle>
+          <CardDescription>
+            基于 sherpa-onnx 的离线关键词识别引擎
+          </CardDescription>
+          <div className="text-sm text-muted-foreground mt-2">
+            ✓ 完全离线 ✓ 无需网络 ✓ 低延迟
+          </div>
+        </CardHeader>
+      </Card>
 
       {/* 支持的关键词显示 */}
-      <div className="keywords-section">
-        <h3>支持的关键词</h3>
-        <div className="keywords-list">
+      <Card>
+        <CardHeader>
+          <CardTitle>支持的关键词</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           {keywordsLoading ? (
-            <p style={{ color: '#888' }}>加载中...</p>
+            <p className="text-muted-foreground">加载中...</p>
           ) : keywords.length === 0 ? (
-            <p style={{ color: '#888' }}>未找到关键词</p>
+            <p className="text-muted-foreground">未找到关键词</p>
           ) : (
-            keywords.map(kw => (
-              <span key={kw} className="keyword-tag">
-                {kw}
-              </span>
-            ))
+            <div className="flex flex-wrap gap-2">
+              {keywords.map(kw => (
+                <Badge key={kw} variant="secondary">
+                  {kw}
+                </Badge>
+              ))}
+            </div>
           )}
-        </div>
-        <button
-          onClick={loadKeywords}
-          style={{ marginTop: '8px' }}
-        >
-          刷新关键词
-        </button>
-      </div>
+          <Button variant="outline" size="sm" onClick={loadKeywords}>
+            刷新关键词
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* 麦克风选择 */}
-      <div className="mic-select">
-        <h3>选择麦克风</h3>
-        <div className="config-row">
-          <select
-            value={selectedMicId}
-            onChange={handleMicSelectChange}
-          >
-            {Platform.isNative() ? (
-              microphones.length === 0 ? (
-                <option value="">未发现麦克风</option>
-              ) : (
-                microphones.map(device => (
-                  <option key={device.stableId} value={device.stableId}>
-                    {device.label || `设备 ${device.type} (ID: ${device.id})`}
-                  </option>
-                ))
-              )
-            ) : (
-              <option value="">Web环境：使用默认麦克风</option>
-            )}
-          </select>
-          <button onClick={populateMicrophones}>刷新设备</button>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>选择麦克风</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Select value={selectedMicId} onValueChange={setSelectedMicId}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="选择麦克风" />
+              </SelectTrigger>
+              <SelectContent>
+                {Platform.isNative() ? (
+                  microphones.length === 0 ? (
+                    <SelectItem value="no-microphone" disabled>未发现麦克风</SelectItem>
+                  ) : (
+                    microphones.map(device => (
+                      <SelectItem key={device.stableId} value={device.stableId}>
+                        {device.label || `设备 ${device.type} (ID: ${device.id})`}
+                      </SelectItem>
+                    ))
+                  )
+                ) : (
+                  <SelectItem value="web-default">Web环境：使用默认麦克风</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" onClick={populateMicrophones}>
+              刷新设备
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 配置区域 */}
-      <div className="config-section">
-        <h3>配置</h3>
+      <Card>
+        <CardHeader>
+          <CardTitle>配置</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="sherpa-threshold">
+              检测阈值：{(threshold / 100).toFixed(2)}
+            </Label>
+            <Input
+              type="range"
+              id="sherpa-threshold"
+              min="0"
+              max="100"
+              value={threshold}
+              onChange={handleThresholdChange}
+              className="w-full"
+            />
+          </div>
 
-        <div className="config-row">
-          <label>检测阈值：</label>
-          <input
-            type="range"
-            id="sherpa-threshold"
-            min="0"
-            max="100"
-            value={threshold}
-            onChange={handleThresholdChange}
-          />
-          <span>{(threshold / 100).toFixed(2)}</span>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="sherpa-sample-rate">采样率</Label>
+            <Select value={sampleRate.toString()} onValueChange={(value) => setSampleRate(parseInt(value))}>
+              <SelectTrigger id="sherpa-sample-rate">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="16000">16000 Hz</SelectItem>
+                <SelectItem value="8000">8000 Hz</SelectItem>
+                <SelectItem value="44100">44100 Hz</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="config-row">
-          <label>采样率：</label>
-          <select
-            id="sherpa-sample-rate"
-            value={sampleRate}
-            onChange={handleSampleRateChange}
-          >
-            <option value={16000}>16000 Hz</option>
-            <option value={8000}>8000 Hz</option>
-            <option value={44100}>44100 Hz</option>
-          </select>
-        </div>
-
-        <div className="config-row">
-          <label>线程数：</label>
-          <select
-            id="sherpa-num-threads"
-            value={numThreads}
-            onChange={handleNumThreadsChange}
-          >
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={4}>4</option>
-          </select>
-        </div>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="sherpa-num-threads">线程数</Label>
+            <Select value={numThreads.toString()} onValueChange={(value) => setNumThreads(parseInt(value))}>
+              <SelectTrigger id="sherpa-num-threads">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 控制按钮 */}
-      <div className="controls">
-        <button onClick={handleInit}>初始化</button>
-        <button onClick={handleStart} disabled={!isInitialized || isRunning}>
-          开始识别
-        </button>
-        <button onClick={handleStop} disabled={!isRunning}>
-          停止
-        </button>
-        <button onClick={handleUpdateKeywords} disabled={!isInitialized}>
-          更新关键词
-        </button>
-      </div>
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleInit}>初始化</Button>
+            <Button 
+              onClick={handleStart} 
+              disabled={!isInitialized || isRunning}
+              variant="default"
+            >
+              开始识别
+            </Button>
+            <Button 
+              onClick={handleStop} 
+              disabled={!isRunning}
+              variant="destructive"
+            >
+              停止
+            </Button>
+            <Button 
+              onClick={handleUpdateKeywords} 
+              disabled={!isInitialized}
+              variant="outline"
+            >
+              更新关键词
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 状态显示 */}
       {status.message && (
-        <div className={`status-box ${status.type}`}>
-          {status.message}
-        </div>
+        <Card className={status.type === 'error' ? 'border-destructive' : status.type === 'success' ? 'border-green-500' : ''}>
+          <CardContent className="pt-6">
+            <div className={`text-sm ${status.type === 'error' ? 'text-destructive' : status.type === 'success' ? 'text-green-600' : 'text-muted-foreground'}`}>
+              {status.message}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* 日志 */}
-      <pre className="log">
-        {logs.length === 0 ? '' : logs.join('\n')}
-      </pre>
+      <Card>
+        <CardHeader>
+          <CardTitle>日志</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ScrollArea className="h-[200px] w-full rounded border p-4">
+            <pre className="text-xs font-mono">
+              {logs.length === 0 ? '' : logs.join('\n')}
+            </pre>
+          </ScrollArea>
+        </CardContent>
+      </Card>
 
       {/* 检测结果 */}
-      <div className="result">
-        <h3>检测结果</h3>
-        <div className="result-text">
+      <Card>
+        <CardHeader>
+          <CardTitle>检测结果</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           {detectionResult ? (
             <>
               {detectionResult.commandInfo ? (
                 <>
-                  <div style={{ marginBottom: '12px' }}>
-                    <div style={{ fontSize: '0.9em', color: '#666', marginBottom: '4px' }}>
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">
                       命令类别
                     </div>
-                    <div style={{ fontSize: '1.1em', color: '#3b82f6', fontWeight: 'bold' }}>
+                    <Badge className="text-base px-3 py-1" variant="default">
                       {detectionResult.commandInfo.name}
-                    </div>
+                    </Badge>
                   </div>
-                  <div style={{ marginBottom: '12px' }}>
-                    <div style={{ fontSize: '0.9em', color: '#666', marginBottom: '4px' }}>
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">
                       具体指令
                     </div>
-                    <div style={{ fontSize: '1.2em', color: '#10b981', fontWeight: 'bold' }}>
+                    <div className="text-2xl font-bold text-green-600">
                       {detectionResult.keyword}
                     </div>
                   </div>
                   {detectionResult.commandInfo.description && (
-                    <div style={{ marginBottom: '12px' }}>
-                      <div style={{ fontSize: '0.9em', color: '#666', marginBottom: '4px' }}>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">
                         说明
                       </div>
-                      <div style={{ fontSize: '0.95em', color: '#888' }}>
+                      <div className="text-sm text-muted-foreground">
                         {detectionResult.commandInfo.description}
                       </div>
                     </div>
                   )}
-                  <div
-                    style={{
-                      marginTop: '12px',
-                      paddingTop: '12px',
-                      borderTop: '1px solid #e5e7eb',
-                      color: '#888',
-                      fontSize: '0.85em'
-                    }}
-                  >
+                  <Separator />
+                  <div className="text-xs text-muted-foreground">
                     置信度: {(detectionResult.confidence * 100).toFixed(1)}% |
                     时间: {new Date(detectionResult.timestamp).toLocaleTimeString()}
                   </div>
                 </>
               ) : (
                 <>
-                  <div style={{ fontSize: '1.2em', color: '#10b981', fontWeight: 'bold' }}>
+                  <div className="text-2xl font-bold text-green-600">
                     {detectionResult.keyword}
                   </div>
-                  <div style={{ marginTop: '8px', color: '#f59e0b', fontSize: '0.9em' }}>
+                  <div className="text-sm text-yellow-600">
                     ⚠️ 未找到对应的命令类别
                   </div>
-                  <div style={{ marginTop: '8px', color: '#888', fontSize: '0.85em' }}>
+                  <div className="text-xs text-muted-foreground">
                     置信度: {(detectionResult.confidence * 100).toFixed(1)}% |
                     时间: {new Date(detectionResult.timestamp).toLocaleTimeString()}
                   </div>
@@ -504,10 +553,10 @@ export function SherpaOnnxPage() {
               )}
             </>
           ) : (
-            <div style={{ color: '#888' }}>暂无检测结果</div>
+            <div className="text-muted-foreground">暂无检测结果</div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

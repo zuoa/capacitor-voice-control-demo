@@ -1,312 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', sans-serif; }
-
-.container { max-width: 720px; margin: 32px auto; padding: 16px; }
-.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-button { padding: 8px 14px; border-radius: 8px; border: 1px solid #9993; cursor: pointer; }
-.log { background: #0008; color: #0f0; padding: 8px; height: 180px; overflow: auto; border-radius: 8px; }
-.result { margin-top: 12px; }
-.result-text { padding: 12px; border-radius: 8px; border: 1px solid #9993; min-height: 48px; font-size: 18px; line-height: 1.5; }
-
-/* 关键词配置样式 */
-.keyword-config {
-  background: rgba(100, 108, 255, 0.1);
-  border: 1px solid rgba(100, 108, 255, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.keyword-config h3 {
-  margin: 0 0 12px 0;
-  color: #646cff;
-  font-size: 1.2em;
-}
-
-.config-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.config-row label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.config-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.config-row select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(26, 26, 26, 0.8);
-  color: inherit;
-  cursor: pointer;
-}
-
-.config-row input[type="range"] {
-  flex: 1;
-  max-width: 200px;
-}
-
-.config-row span {
-  min-width: 48px;
-  text-align: center;
-  font-weight: bold;
-  color: #646cff;
-}
-
-.keywords-input {
-  margin-top: 12px;
-}
-
-.keywords-input textarea {
-  width: 100%;
-  min-height: 120px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(26, 26, 26, 0.8);
-  color: inherit;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
-  resize: vertical;
-  line-height: 1.5;
-}
-
-.keywords-input button {
-  margin-top: 8px;
-  background-color: #646cff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-weight: bold;
-}
-
-.keywords-input button:hover {
-  background-color: #535bf2;
-}
-
-/* 关键词显示区域样式 */
-.keywords-section {
-  background: rgba(100, 108, 255, 0.05);
-  border: 1px solid rgba(100, 108, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.keywords-section h3 {
-  margin: 0 0 12px 0;
-  color: #646cff;
-  font-size: 1.1em;
-}
-
-.keywords-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px;
-  background: rgba(26, 26, 26, 0.5);
-  border-radius: 8px;
-  min-height: 60px;
-  align-items: flex-start;
-}
-
-.keyword-tag {
-  display: inline-block;
-  padding: 6px 12px;
-  background: rgba(100, 108, 255, 0.2);
-  border: 1px solid rgba(100, 108, 255, 0.4);
-  border-radius: 16px;
-  font-size: 0.9em;
-  color: #aab4ff;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.keyword-tag:hover {
-  background: rgba(100, 108, 255, 0.3);
-  border-color: rgba(100, 108, 255, 0.6);
-  transform: translateY(-1px);
-}
-
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+html, body, #app { 
+  margin: 0; 
+  padding: 0;
   min-height: 100vh;
+  width: 100%;
+}
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', sans-serif; 
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #f7df1eaa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-/* 状态提示框样式 */
-.status-box {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  text-align: center;
-  font-weight: 500;
-}
-
-.status-box.info {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
-}
-
-.status-box.success {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #10b981;
-}
-
-.status-box.error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-}
-
-.info-box {
-  background: rgba(100, 108, 255, 0.05);
-  border: 1px solid rgba(100, 108, 255, 0.2);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 20px;
-}
-
-.sherpa-onnx-page {
-  text-align: left;
-}
-
-.config-section {
-  background: rgba(100, 108, 255, 0.05);
-  border: 1px solid rgba(100, 108, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.config-section h3 {
-  margin: 0 0 12px 0;
-  color: #646cff;
-  font-size: 1.1em;
-}
-
-.mic-select {
-  background: rgba(100, 108, 255, 0.05);
-  border: 1px solid rgba(100, 108, 255, 0.2);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.mic-select h3 {
-  margin: 0 0 12px 0;
-  color: #646cff;
-  font-size: 1.1em;
-}
-
-.mic-select select {
-  flex: 1;
-  min-width: 200px;
-}
 
