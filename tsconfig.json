@@ -8,7 +8,19 @@
     "noEmit": true,
     "isolatedModules": true,
     "baseUrl": ".",
-    "types": ["@capacitor/core"]
+    "types": [
+      "@capacitor/core",
+      "react",
+      "react-dom"
+    ],
+    "jsx": "react-jsx",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ]
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": [
+    "src",
+    "vite-env.d.ts"
+  ]
 }
