@@ -37,6 +37,13 @@ interface DetectionResult {
   }
 }
 
+// 视频源配置（移到组件外部，避免每次渲染重新创建）
+const VIDEO_SOURCES = [
+  'https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209105011F0zPoYzHry.mp4',
+  'https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-360p.mp4',
+  'https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209104902N3v5Vpxuvb.mp4'
+]
+
 export function SherpaOnnxPage() {
   // 状态管理
   const [isInitialized, setIsInitialized] = useState(false)
@@ -59,11 +66,89 @@ export function SherpaOnnxPage() {
   const listenersRef = useRef<Array<{ remove: () => void }>>([])
   const statusIntervalRef = useRef<number | null>(null)
 
+  // 视频引用
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0)
+
   // 日志记录
   const log = useCallback((message: string) => {
     const ts = new Date().toISOString()
     setLogs(prev => [`[${ts}] ${message}`, ...prev])
   }, [])
+
+  const getCurrentVideo = useCallback((): HTMLVideoElement | null => {
+    return videoRef.current
+  }, [])
+
+  const controlVideosByCommand = useCallback((commandId: string) => {
+    const video = getCurrentVideo()
+    if (!video) return
+
+    const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max)
+
+    switch (commandId) {
+      case 'resume': {
+        const p = video.play()
+        if (p && typeof p.catch === 'function') p.catch(() => {})
+        log('执行: 继续播放')
+        break
+      }
+      case 'pause': {
+        video.pause()
+        log('执行: 暂停')
+        break
+      }
+      case 'replay': {
+        video.currentTime = 0
+        // 确保自动播放
+        const playPromise = video.play()
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch((err) => {
+            // 如果自动播放失败，记录但不中断
+            log('重播自动播放被阻止，可能需要用户交互')
+          })
+        }
+        log('执行: 重播')
+        break
+      }
+      case 'restart': {
+        video.currentTime = 0
+        video.pause()
+        log('执行: 返回开始（回到0并暂停）')
+        break
+      }
+      case 'previous': {
+        // 使用函数式更新确保获取最新的 currentVideoIndex
+        setCurrentVideoIndex((prevIndex) => {
+          const newIndex = (prevIndex - 1 + VIDEO_SOURCES.length) % VIDEO_SOURCES.length
+          log(`执行: 切换到上一个视频（视频 ${newIndex + 1}/${VIDEO_SOURCES.length}）`)
+          return newIndex
+        })
+        break
+      }
+      case 'next': {
+        // 使用函数式更新确保获取最新的 currentVideoIndex
+        setCurrentVideoIndex((prevIndex) => {
+          const newIndex = (prevIndex + 1) % VIDEO_SOURCES.length
+          log(`执行: 切换到下一个视频（视频 ${newIndex + 1}/${VIDEO_SOURCES.length}）`)
+          return newIndex
+        })
+        break
+      }
+      case 'volumeUp': {
+        video.volume = clamp(video.volume + 0.1, 0, 1)
+        log('执行: 音量调大')
+        break
+      }
+      case 'volumeDown': {
+        video.volume = clamp(video.volume - 0.1, 0, 1)
+        log('执行: 音量调小')
+        break
+      }
+      default:
+        break
+    }
+  }, [getCurrentVideo, log])
 
   // 更新状态
   const updateStatus = useCallback((message: string, type: 'info' | 'success' | 'error' = 'info') => {
@@ -272,6 +357,11 @@ export function SherpaOnnxPage() {
         ? `检测到: ${commandInfo.name} - ${event.keyword}`
         : `检测到: ${event.keyword}`
       updateStatus(statusMessage, 'success')
+
+      // 执行视频控制
+      if (commandInfo?.id) {
+        controlVideosByCommand(commandInfo.id)
+      }
     })
 
     // 错误监听器
@@ -311,6 +401,38 @@ export function SherpaOnnxPage() {
     }
   }, [selectedMicId, selectMicrophone])
 
+  // 视频切换时自动播放
+  useEffect(() => {
+    // 使用 setTimeout 确保 DOM 更新完成
+    const timer = setTimeout(() => {
+      const video = videoRef.current
+      if (!video) return
+
+      // 当视频可以播放时，自动播放
+      const handleCanPlay = () => {
+        const p = video.play()
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            // 如果自动播放失败（可能是浏览器策略），记录日志但不报错
+            log('视频自动播放被阻止（可能需要用户交互）')
+          })
+        }
+      }
+
+      // 如果视频已经加载好，直接播放
+      if (video.readyState >= 3) {
+        handleCanPlay()
+      } else {
+        video.addEventListener('canplay', handleCanPlay, { once: true })
+        video.addEventListener('loadeddata', handleCanPlay, { once: true })
+      }
+    }, 100)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [currentVideoIndex, log])
+
   // 处理阈值变化
   const handleThresholdChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setThreshold(parseInt(e.target.value))
@@ -328,6 +450,29 @@ export function SherpaOnnxPage() {
             ✓ 完全离线 ✓ 无需网络 ✓ 低延迟
           </div>
         </CardHeader>
+      </Card>
+
+      {/* 测试视频区域 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>测试视频（支持语音指令控制）</CardTitle>
+          <CardDescription>
+            指令：继续、暂停、重播、返回开始、上一步/下一步（切换视频）、音量调大/音量调小
+            <br />
+            当前视频：{currentVideoIndex + 1} / {VIDEO_SOURCES.length}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="w-full">
+            <video
+              key={currentVideoIndex}
+              ref={videoRef}
+              controls
+              className="w-full rounded border max-w-4xl mx-auto"
+              src={VIDEO_SOURCES[currentVideoIndex]}
+            />
+          </div>
+        </CardContent>
       </Card>
 
       {/* 支持的关键词显示 */}
