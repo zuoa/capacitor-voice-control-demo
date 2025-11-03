@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { SherpaOnnxPage } from './pages/SherpaOnnxReact'
+import { SherpaOnnxPage } from './pages'
 
 export function App() {
   return (
