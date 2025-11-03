@@ -1,0 +1,34 @@
+n ǐ h ǎo j ūn g ē @你好军哥
+d àn g ē d àn g ē @蛋哥蛋哥
+x iǎo ài t óng x ué @小爱同学
+n ǐ h ǎo w èn w èn @你好问问
+x iǎo y ì x iǎo y ì @小艺小艺
+x iǎo m ǐ x iǎo m ǐ @小米小米
+l ín m ěi l ì @林美丽
+n ǐ h ǎo x ī x ī @你好西西
+sh àng y ī b ù @上一步
+sh àng y ī g è @上一个
+q ián y ī b ù @前一步
+x ià y ī b ù @下一步
+x ià y ī g è @下一个
+h òu y ī g è @后一个
+f ǎn h uí k āi sh ǐ @返回开始
+ch óng x īn k āi sh ǐ @重新开始
+h uí d ào q ǐ d iǎn @回到起点
+c óng t óu k āi sh ǐ @从头开始
+z ài b ō y ī c ì @再播一次
+ch óng b ō @重播
+z ài l ái y ī b iàn @再来一遍
+ch óng x īn l ái @重新来
+ch óng x īn b ō f àng @重新播放
+z àn t íng @暂停
+j ì x ù @继续
+j iē zh e b ō f àng @接着播放
+t iáo d à y īn l iàng @调大音量
+y īn l iàng t iáo g āo @音量调高
+sh ēng y īn d à y ī d iǎn @声音大一点
+sh ēng y īn t iáo d à @声音调大
+t iáo x iǎo y īn l iàng @调小音量
+y īn l iàng t iáo d ī @音量调低
+sh ēng y īn x iǎo y ī d iǎn @声音小一点
+sh ēng y īn t iáo x iǎo @声音调小
