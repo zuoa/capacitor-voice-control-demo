@@ -237,3 +237,76 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* 状态提示框样式 */
+.status-box {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.status-box.info {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.status-box.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.status-box.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.info-box {
+  background: rgba(100, 108, 255, 0.05);
+  border: 1px solid rgba(100, 108, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.sherpa-onnx-page {
+  text-align: left;
+}
+
+.config-section {
+  background: rgba(100, 108, 255, 0.05);
+  border: 1px solid rgba(100, 108, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.config-section h3 {
+  margin: 0 0 12px 0;
+  color: #646cff;
+  font-size: 1.1em;
+}
+
+.mic-select {
+  background: rgba(100, 108, 255, 0.05);
+  border: 1px solid rgba(100, 108, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.mic-select h3 {
+  margin: 0 0 12px 0;
+  color: #646cff;
+  font-size: 1.1em;
+}
+
+.mic-select select {
+  flex: 1;
+  min-width: 200px;
+}
+

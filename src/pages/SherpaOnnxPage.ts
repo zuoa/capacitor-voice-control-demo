@@ -1,8 +1,8 @@
 /**
  * Sherpa-ONNX 测试页面
  */
-import { SherpaOnnx, KeywordDetectedEvent, ErrorEvent } from './sherpa-onnx-plugin'
-import { Capacitor } from '@capacitor/core'
+import { SherpaOnnx, KeywordDetectedEvent, ErrorEvent } from '../capacitor/plugins'
+import { Platform } from '../capacitor/utils'
 
 export function createSherpaOnnxPage(): string {
   return `
@@ -106,7 +106,7 @@ export function setupSherpaOnnxPage() {
     if (!select) return
     
     try {
-      if (Capacitor.isNativePlatform()) {
+      if (Platform.isNative()) {
         // 使用原生 API 获取设备列表
         const res = await SherpaOnnx.listInputs()
         const inputs = res?.inputs || []
@@ -146,7 +146,7 @@ export function setupSherpaOnnxPage() {
   async function selectMicrophone(stableId: string) {
     if (!stableId) return
     
-    if (Capacitor.isNativePlatform()) {
+    if (Platform.isNative()) {
       try {
         localStorage.setItem('sherpa-preferredMicStableId', stableId)
         const res = await SherpaOnnx.selectInput({ stableId })
@@ -285,7 +285,7 @@ export function setupSherpaOnnxPage() {
       return
     }
     
-    const keywordsText = (document.getElementById('sherpa-keywords-text') as HTMLTextAreaElement).value.trim()
+    const keywordsText = (document.getElementById('sherpa-keywords-text') as HTMLTextAreaElement)?.value.trim()
     const keywords = keywordsText ? keywordsText.split('\n').filter(k => k.trim()) : []
     
     if (keywords.length === 0) {

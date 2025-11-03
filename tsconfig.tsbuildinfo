@@ -1,1 +1,1 @@
-{"root":["./src/main.ts","./src/sherpa-onnx-example.ts","./src/sherpa-onnx-page.ts","./src/sherpa-onnx-plugin.ts"],"version":"5.9.3"}
+{"root":["./src/app.ts","./src/main.ts","./src/capacitor/plugins/index.ts","./src/capacitor/plugins/sherpa-onnx.ts","./src/capacitor/utils/index.ts","./src/capacitor/utils/permissions.ts","./src/capacitor/utils/platform.ts","./src/pages/sherpaonnxpage.ts","./src/pages/index.ts","./src/services/commandrecognitionsystem.ts","./src/services/index.ts","./src/utils/examples.ts","./src/utils/index.ts"],"version":"5.9.3"}

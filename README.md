@@ -1,5 +1,7 @@
 ## Capacitor + Sherpa-ONNX 语音识别 Demo（Android）
 
+> **📢 项目已重构**: 项目结构已按照 Capacitor 最佳实践重新组织。详见 [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
+
 本示例为 Android 平板应用的离线语音识别 Demo，使用 Capacitor 集成 Sherpa-ONNX 关键词识别引擎。
 
 ### 特性
